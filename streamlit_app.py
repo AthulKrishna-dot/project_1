@@ -24,6 +24,15 @@ if not data_available:
     st.warning("Demo CSV files were not found. Please ensure the backend/data folder exists and contains rehabilitation_data.csv and intraday_data.csv.")
     st.stop()
 
+# Some CSV-based projects may not include a direct recovery_score column.
+# Create it from the available rehab metrics when it is missing.
+if "recovery_score" not in rehab_df.columns:
+    rehab_df["recovery_score"] = (
+        (rehab_df.get("general_condition_score", 0) * 0.5)
+        + (rehab_df.get("sleep_score", 0) * 0.25)
+        + (rehab_df.get("appetite_score", 0) * 0.25)
+    ).round(2)
+
 st.subheader("Overview")
 
 col1, col2, col3, col4 = st.columns(4)
